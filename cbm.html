@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora CBM</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        .calculator {
+            max-width: 600px;
+            width: 100%;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .calculator h2 {
+            margin-top: 0;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: calc(100% - 16px);
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        
+        .btn-group {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .btn {
+            flex: 1;
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+            text-align: left;
+        }
+        
+        .result-box {
+            background-color: #e0e0e0;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+        
+        .logo {
+            width: 150px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .form-group input,
+            .form-group select {
+                width: 100%;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="calculator">
+    <!--  <img src="img/apple-touch-icon.png" alt="Logo de la calculadora" class="logo"> -->
+    <h2>Calculadora de Metros Cúbicos (CBM)</h2>
+    <div class="form-group">
+        <label for="unit">Unidad de Medida:</label>
+        <select id="unit">
+            <option value="cm">Centímetros (cm)</option>
+            <option value="mm">Milímetros (mm)</option>
+            <option value="m">Metros (m)</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="width">Ancho:</label>
+        <input type="number" id="width" placeholder="Ingrese el ancho">
+    </div>
+    <div class="form-group">
+        <label for="length">Largo:</label>
+        <input type="number" id="length" placeholder="Ingrese el largo">
+    </div>
+    <div class="form-group">
+        <label for="height">Alto:</label>
+        <input type="number" id="height" placeholder="Ingrese el alto">
+    </div>
+    <div class="form-group">
+        <label for="weightUnit">Unidad de Peso:</label>
+        <select id="weightUnit">
+            <option value="kg">Kilogramos (kg)</option>
+            <option value="g">Gramos (g)</option>
+            <option value="lb">Libras (lb)</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="weight">Peso:</label>
+        <input type="number" id="weight" placeholder="Ingrese el peso">
+    </div>
+    <div class="form-group">
+        <label for="quantity">Cantidad de cajas:</label>
+        <input type="number" id="quantity" placeholder="Ingrese la cantidad de cajas">
+    </div>
+    <div class="btn-group">
+        <button class="btn" onclick="calculateCBM()">Calcular CBM</button>
+        <button class="btn" onclick="resetForm()">Nuevo Cálculo</button>
+        <button class="btn" onclick="goBack()">Regresar</button>
+    </div>
+    <div class="result" id="result">
+        <div class="result-box" id="volumeMeters"></div>
+        <div class="result-box" id="volumeFeet"></div>
+        <div class="result-box" id="totalWeight"></div>
+    </div>
+</div>
+
+<script>
+    function calculateCBM() {
+        // Obtener los valores de los inputs
+        const unit = document.getElementById('unit').value;
+        const width = parseFloat(document.getElementById('width').value);
+        const length = parseFloat(document.getElementById('length').value);
+        const height = parseFloat(document.getElementById('height').value);
+        const weightUnit = document.getElementById('weightUnit').value;
+        const weight = parseFloat(document.getElementById('weight').value) || 0; // Si no se ingresa peso, se asume 0
+        const quantity = parseInt(document.getElementById('quantity').value);
+
+        // Validar los valores
+        if (isNaN(width) || isNaN(length) || isNaN(height) || isNaN(quantity)) {
+            alert('Por favor, ingrese todos los valores correctamente.');
+            return;
+        }
+
+        // Convertir las dimensiones a metros
+        let widthInMeters, lengthInMeters, heightInMeters;
+        if (unit === 'cm') {
+            widthInMeters = width / 100;
+            lengthInMeters = length / 100;
+            heightInMeters = height / 100;
+        } else if (unit === 'mm') {
+            widthInMeters = width / 1000;
+            lengthInMeters = length / 1000;
+            heightInMeters = height / 1000;
+        } else {
+            widthInMeters = width;
+            lengthInMeters = length;
+            heightInMeters = height;
+        }
+
+        // Convertir el peso a kilogramos
+        let weightInKg;
+        if (weightUnit === 'g') {
+            weightInKg = weight / 1000;
+        } else if (weightUnit === 'lb') {
+            weightInKg = weight * 0.453592;
+        } else {
+            weightInKg = weight;
+        }
+
+        // Calcular el volumen de una caja en metros cúbicos
+        const volumePerBox = widthInMeters * lengthInMeters * heightInMeters;
+
+        // Calcular el volumen total y el peso total
+        const totalVolume = volumePerBox * quantity;
+        const totalWeightKg = weightInKg * quantity;
+        const totalWeightLb = totalWeightKg * 2.20462;
+
+        // Convertir el volumen total a pies cúbicos
+        const totalVolumeInCubicFeet = totalVolume * 35.3147;
+
+        // Mostrar el resultado
+        document.getElementById('volumeMeters').innerHTML = 
+            `<strong>Volumen Total (m³):</strong><br>${totalVolume.toFixed(3)}`;
+        document.getElementById('volumeFeet').innerHTML = 
+            `<strong>Volumen Total (ft³):</strong><br>${totalVolumeInCubicFeet.toFixed(3)}`;
+        document.getElementById('totalWeight').innerHTML = 
+            `<strong>Peso Total:</strong><br>${totalWeightKg.toFixed(2)} kg / ${totalWeightLb.toFixed(2)} lb`;
+    }
+
+    function resetForm() {
+        document.getElementById('unit').value = 'cm';
+        document.getElementById('width').value = '';
+        document.getElementById('length').value = '';
+        document.getElementById('height').value = '';
+        document.getElementById('weightUnit').value = 'kg';
+        document.getElementById('weight').value = '';
+        document.getElementById('quantity').value = '';
+        document.getElementById('volumeMeters').innerHTML = '';
+        document.getElementById('volumeFeet').innerHTML = '';
+        document.getElementById('totalWeight').innerHTML = '';
+    }
+
+    function goBack() {
+        window.location.href = "index.html"; // Reemplaza con la URL a la que deseas regresar
+    }
+</script>
+
+</body>
+</html>
